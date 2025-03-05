@@ -1,0 +1,6 @@
+__pycache__/
+*.parqet
+*.csv
+bkp/
+real/
+simulated/
