@@ -7,7 +7,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-import torch
+# import torch
 
 
 
@@ -15,7 +15,7 @@ import torch
 seed = 151836
 
 # Device
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Mapping for vehicle IDs to car models and driving styles
 vehicle_info = {

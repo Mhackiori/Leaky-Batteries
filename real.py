@@ -5,6 +5,7 @@ import sys
 from tqdm import tqdm
 import warnings
 
+from imblearn.under_sampling import RandomUnderSampler
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from tsfresh.utilities.dataframe_functions import impute
@@ -54,6 +55,7 @@ for file in os.listdir(nissan_path):
         dfs.append(df)
 
 ### DRIVER IDENTIFICATION ###
+
 tsfreshs = []
 window_size = 10
 
@@ -134,8 +136,11 @@ else:
 
 start = tsfresh['start']
 tsfresh = tsfresh.drop(columns=['start'])
+rus = RandomUnderSampler(random_state=seed)
+tsfresh, start = rus.fit_resample(tsfresh, start)
 tsfresh = impute(tsfresh)
 tsfresh = select_features(tsfresh, start)
+
 
 X_train, X_test, y_train, y_test = train_test_split(tsfresh, start, test_size=0.2, random_state=seed)
 
@@ -147,12 +152,11 @@ results = []
 
 for name, clf, param in tqdm(zip(names, classifiers, parameters), desc='Start Identification', total=len(names)):
     # GridSearchCV
-    start_driver, start_driver = trainGrid(clf, param, X_train, y_train, X_test, y_test)
-    print(f'{name} {start_driver} {start_driver}')
-    results.append([name, start_driver, start_driver])
+    start_accuracy, start_f1 = trainGrid(clf, param, X_train, y_train, X_test, y_test)
+    results.append([name, start_accuracy, start_f1])
 
-results_df = pd.DataFrame(results, columns=['model', 'start_driver', 'start_driver'])
-results_df.to_csv('./results/real/start_identification.csv', index=False)
+results_df = pd.DataFrame(results, columns=['model', 'start_accuracy', 'start_f1'])
+results_df.to_csv('./results2/real/start_identification.csv', index=False)
 
 
 ### ENDING POINT IDENTIFICATION ###
@@ -187,6 +191,8 @@ else:
 
 end = tsfresh['end']
 tsfresh = tsfresh.drop(columns=['end'])
+rus = RandomUnderSampler(random_state=seed)
+tsfresh, end = rus.fit_resample(tsfresh, end)
 tsfresh = impute(tsfresh)
 tsfresh = select_features(tsfresh, end)
 
@@ -200,9 +206,8 @@ results = []
 
 for name, clf, param in tqdm(zip(names, classifiers, parameters), desc='End Identification', total=len(names)):
     # GridSearchCV
-    end_driver, end_driver = trainGrid(clf, param, X_train, y_train, X_test, y_test)
-    print(f'{name} {end_driver} {end_driver}')
-    results.append([name, end_driver, end_driver])
+    end_accuracy, end_f1 = trainGrid(clf, param, X_train, y_train, X_test, y_test)
+    results.append([name, end_accuracy, end_f1])
 
-results_df = pd.DataFrame(results, columns=['model', 'end_driver', 'end_driver'])
-results_df.to_csv('./results/real/end_identification.csv', index=False)
+results_df = pd.DataFrame(results, columns=['model', 'end_accuracy', 'end_f1'])
+results_df.to_csv('./results2/real/end_identification.csv', index=False)
